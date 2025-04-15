@@ -1,0 +1,145 @@
++-----------------------------+
+|           User             |
++-----------------------------+
+| - id: String               |
+| - name: String             |
+| - email: String            |
+| - phoneNumber: String      |
++-----------------------------+
+| + getId(): String          |
+| + getName(): String        |
+| + getEmail(): String       |
+| + getPhoneNumber(): String |
+| + toString(): String       |
++-----------------------------+
+
++-----------------------------+
+|           Split            |
++-----------------------------+
+| - user: User               |
+| - amount: double           |
++-----------------------------+
+| + getUser(): User          |
+| + getAmount(): double      |
++-----------------------------+
+
++-----------------------------+
+|       <<interface>>        |
+|        SplitStrategy       |
++-----------------------------+
+| + validate(exp: Expense):  |
+|   boolean                  |
++-----------------------------+
+
++-----------------------------+
+|     EqualSplitStrategy     |
++-----------------------------+
+| + validate(exp: Expense):  |
+|   boolean                  |
++-----------------------------+
+
++-----------------------------+
+|     ExactSplitStrategy     |
++-----------------------------+
+| + validate(exp: Expense):  |
+|   boolean                  |
++-----------------------------+
+
++-----------------------------+
+| PercentageSplitStrategy    |
++-----------------------------+
+| + validate(exp: Expense):  |
+|   boolean                  |
++-----------------------------+
+
++-----------------------------+
+|           Expense          |
++-----------------------------+
+| - id: String               |
+| - paidBy: User             |
+| - amount: double           |
+| - splits: List<Split>      |
+| - strategy: SplitStrategy  |
++-----------------------------+
+| + getId(): String          |
+| + getPaidBy(): User        |
+| + getAmount(): double      |
+| + getSplits(): List<Split> |
+| + validate(): boolean      |
++-----------------------------+
+
++-----------------------------+
+|        BalanceSheet        |
++-----------------------------+
+| - balances: Map<String,    |
+|   Map<String, Double>>     |
++-----------------------------+
+| + updateBalance(...)       |
+| + reverseBalance(...)      |
+| + getBalances(): Map<...>  |
++-----------------------------+
+
++-----------------------------+
+|       ExpenseService       |
++-----------------------------+
+| - balanceSheet: BalanceSheet|
+| - expenseMap: Map<String,  |
+|   Expense>                 |
++-----------------------------+
+| + addExpense(Expense)      |
+| + updateExpense(id, Expense)|
+| + getBalances(): Map<...>  |
++-----------------------------+
+
++-----------------------------+
+|           Group            |
++-----------------------------+
+| - name: String             |
+| - users: List<User>        |
+| - expenseIds: List<String> |
++-----------------------------+
+| + addUser(User)            |
+| + addExpense(String)       |
+| + getUsers(): List<User>   |
+| + getExpenseIds(): List<>  |
++-----------------------------+
+
++-----------------------------+
+|        GroupManager        |
++-----------------------------+
+| - groups: Map<String,      |
+|   Group>                   |
+| - groupExpenseServices:    |
+|   Map<String, ExpenseService> |
++-----------------------------+
+| + createGroup(String):     |
+|   Group                    |
+| + addUserToGroup(...)      |
+| + addExpense(...)          |
+| + updateExpense(...)       |
+| + showBalances(...)        |
+| + simplifyDebts(...)       |
++-----------------------------+
+
++-----------------------------+
+|       DisplayService       |
++-----------------------------+
+| + showBalances(Map<...>,   |
+|   Map<String, User>)       |
++-----------------------------+
+
++-----------------------------+
+|       DebtSimplifier       |
++-----------------------------+
+| + simplify(Map<...>)       |
++-----------------------------+
+| - UserBalance              |
+|   - userId: String         |
+|   - amount: double         |
++-----------------------------+
+
++-----------------------------+
+|          Main              |
++-----------------------------+
+| + main(String[]): void     |
++-----------------------------+
