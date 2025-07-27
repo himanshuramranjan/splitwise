@@ -1,15 +1,31 @@
 package strategies;
 
-import models.Expense;
 import models.Split;
+import models.User;
 
-public class ExactSplitStrategy implements SplitStrategy {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ExactSplitStrategy implements SplitStrategy<List<Double>> {
     @Override
-    public boolean validate(Expense expense) {
-        double total = 0.0;
-        for(Split split : expense.getSplits()) {
-            total += split.getAmount();
+    public List<Split> calculateSplit(List<User> involvedUsers, double totalAmount, List<Double> exactAmounts) {
+
+        if (exactAmounts.size() != involvedUsers.size()) {
+            throw new IllegalArgumentException("Amounts count must match users count");
         }
-        return total == expense.getAmount();
+
+        double sum = 0;
+        for (Double val : exactAmounts) {
+            sum += val;
+        }
+        if (Math.abs(sum - totalAmount) > 0.01) {
+            throw new IllegalArgumentException("Exact amounts do not sum up to total amount.");
+        }
+
+        List<Split> splits = new ArrayList<>();
+        for (int i = 0; i < involvedUsers.size(); i++) {
+            splits.add(new Split(involvedUsers.get(i), exactAmounts.get(i)));
+        }
+        return splits;
     }
 }

@@ -1,17 +1,20 @@
 package strategies;
 
-import models.Expense;
 import models.Split;
+import models.User;
 
-public class EqualSplitStrategy implements SplitStrategy {
+import java.util.ArrayList;
+import java.util.List;
+
+public class EqualSplitStrategy implements SplitStrategy<Void> {
 
     @Override
-    public boolean validate(Expense expense) {
-        int numberOfSplits = expense.getSplits().size();
-        double expectedSplit = expense.getAmount() / numberOfSplits;
-        for(Split split : expense.getSplits()) {
-            if(Math.abs(split.getAmount() - expectedSplit) > 0.01) return false;
+    public List<Split> calculateSplit(List<User> involvedUsers, double totalAmount, Void extraData) {
+        double splitAmount = totalAmount / involvedUsers.size();
+        List<Split> splits = new ArrayList<>();
+        for (User user : involvedUsers) {
+            splits.add(new Split(user, splitAmount));
         }
-        return true;
+        return splits;
     }
 }

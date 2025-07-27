@@ -1,7 +1,10 @@
 package strategies;
 
-import models.Expense;
+import models.Split;
+import models.User;
 
-public interface SplitStrategy {
-    boolean validate(Expense expense);
+import java.util.List;
+
+public interface SplitStrategy<T> {
+    List<Split> calculateSplit(List<User> involvedUsers, double totalAmount, T extraData);
 }
