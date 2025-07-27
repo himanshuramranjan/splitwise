@@ -3,15 +3,17 @@ package service;
 import models.Expense;
 import models.Group;
 import models.User;
+import strategies.SplitStrategy;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class GroupManager {
+public class GroupService {
     private final Map<String, Group> groups;
     private final Map<String, ExpenseService> groupExpenseServices;
 
-    public GroupManager() {
+    public GroupService() {
         this.groups = new HashMap<>();
         this.groupExpenseServices = new HashMap<>();
     }
@@ -30,20 +32,31 @@ public class GroupManager {
         }
     }
 
-    public void addExpense(String groupName, Expense expense) {
+    public Expense addExpense(String groupName, User paidBy, List<User> involvedUsers, double totalAmount, SplitStrategy splitStrategy, Object extraData) {
         Group group = groups.get(groupName);
         ExpenseService service = groupExpenseServices.get(groupName);
-        if(group != null && service != null && expense.validate()) {
+        if(group != null && service != null) {
+            Expense expense = service.addExpense(paidBy, involvedUsers, totalAmount, splitStrategy, extraData);
             group.addExpenseId(expense.getId());
-            service.addExpense(expense);
+            return expense;
         }
+        return null;
     }
 
-    public void updateExpense(String groupName, Expense updatedExpense) {
+    public Expense updateExpense(String groupName, String expenseId, List<User> involvedUsers, double newAmount, SplitStrategy splitStrategy, Object extraData) {
         ExpenseService service = groupExpenseServices.get(groupName);
-        if(service != null && updatedExpense.validate()) {
-            service.updateExpense(updatedExpense);
+        if(service != null) {
+            return service.updateExpense(expenseId, involvedUsers, newAmount, splitStrategy, extraData);
         }
+        return null;
+    }
+
+    public void deleteExpense(String groupName, String expenseId) {
+        ExpenseService service = groupExpenseServices.get(groupName);
+        if(service == null) {
+            throw new IllegalArgumentException("Group not found " + groupName);
+        }
+        service.deleteExpense(expenseId);
     }
 
     public void showBalances(String groupName) {
