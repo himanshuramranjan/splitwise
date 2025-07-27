@@ -1,0 +1,31 @@
+Main
+ |
+ |---> GroupManager.createGroup()
+ |         |
+ |         ---> new Group created
+ |
+ |---> GroupManager.addUserToGroup()
+ |         |
+ |         ---> Group.addUser()
+ |
+ |---> GroupManager.addExpense()
+ |         |
+ |         ---> ExpenseService.addExpense()
+ |                   |
+ |                   ---> SplitStrategy.calculateSplits()
+ |                   |
+ |                   ---> BalanceSheet.updateBalance()
+ |
+ |---> GroupManager.showBalances()
+ |         |
+ |         ---> DisplayService.showBalances()
+ |
+ |---> GroupManager.simplifyDebt()
+ |         |
+ |         ---> DebtSimplifier.simplify()
+ |                   |
+ |                   ---> Returns minimized transactions
+ |
+ |---> GroupManager.showBalances()
+ |         |
+ |         ---> DisplayService.showBalances()
