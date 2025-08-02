@@ -1,4 +1,4 @@
-package strategies;
+package service.strategies;
 
 import models.Expense;
 import models.Split;

@@ -1,8 +1,7 @@
-package strategies;
+package service.strategies;
 
 import models.Expense;
 import models.Split;
-import models.User;
 
 import java.util.ArrayList;
 import java.util.List;
