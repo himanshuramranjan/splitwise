@@ -1,5 +1,6 @@
 package strategies;
 
+import models.Expense;
 import models.Split;
 import models.User;
 
@@ -9,8 +10,8 @@ import java.util.List;
 public class PercentageSplitStrategy implements SplitStrategy<List<Double>> {
 
     @Override
-    public List<Split> calculateSplit(List<User> involvedUsers, double totalAmount, List<Double> percentages) {
-        if (percentages.size() != involvedUsers.size()) {
+    public List<Split> calculateSplit(Expense expense, List<Double> percentages) {
+        if (percentages.size() != expense.getInvolvedUsers().size()) {
             throw new IllegalArgumentException("Percentages count must match users count");
         }
 
@@ -23,8 +24,8 @@ public class PercentageSplitStrategy implements SplitStrategy<List<Double>> {
         }
 
         List<Split> splits = new ArrayList<>();
-        for (int i = 0; i < involvedUsers.size(); i++) {
-            splits.add(new Split(involvedUsers.get(i), totalAmount * (percentages.get(i) / 100)));
+        for (int i = 0; i < expense.getInvolvedUsers().size(); i++) {
+            splits.add(new Split(expense.getInvolvedUsers().get(i), expense.getAmount() * (percentages.get(i) / 100)));
         }
         return splits;
     }
