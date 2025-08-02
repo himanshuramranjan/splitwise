@@ -1,14 +1,15 @@
 package service;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 
 public class DebtSimplifier {
 
-    public void simplify(Map<String, Map<String, Double>> balances) {
-        PriorityQueue<UserBalance> positive = new PriorityQueue<>((a, b) -> Double.compare(b.amount, a.amount));
-        PriorityQueue<UserBalance> negative = new PriorityQueue<>((a, b) -> Double.compare(a.amount, b.amount));
+    public static void simplify(Map<String, Map<String, Double>> balances) {
+        PriorityQueue<UserBalance> netGiver = new PriorityQueue<>((a, b) -> Double.compare(b.amount, a.amount));
+        PriorityQueue<UserBalance> netReceiver = new PriorityQueue<>(Comparator.comparingDouble(a -> a.amount));
 
         Map<String, Double> netBalance = new HashMap<>();
 
@@ -21,25 +22,25 @@ public class DebtSimplifier {
         }
 
         for (Map.Entry<String, Double> entry : netBalance.entrySet()) {
-            if (entry.getValue() > 0.01) {
-                positive.add(new UserBalance(entry.getKey(), entry.getValue()));
-            } else if (entry.getValue() < -0.01) {
-                negative.add(new UserBalance(entry.getKey(), entry.getValue()));
+            if (entry.getValue() > 0.0) {
+                netGiver.add(new UserBalance(entry.getKey(), entry.getValue()));
+            } else if (entry.getValue() < 0.0) {
+                netReceiver.add(new UserBalance(entry.getKey(), entry.getValue()));
             }
         }
 
-        while (!positive.isEmpty() && !negative.isEmpty()) {
-            UserBalance creditor = positive.poll();
-            UserBalance debtor = negative.poll();
+        while (!netGiver.isEmpty() && !netReceiver.isEmpty()) {
+            UserBalance creditor = netGiver.poll();
+            UserBalance debtor = netReceiver.poll();
 
             double amount = Math.min(creditor.amount, -debtor.amount);
-//            System.out.println(debtor. + " pays " + creditor.userId + ": " + amount);
+            System.out.println(creditor.userId + " pays " + debtor.userId + ": " + amount);
 
-            if (creditor.amount - amount > 0.01) {
-                positive.add(new UserBalance(creditor.userId, creditor.amount - amount));
+            if (creditor.amount - amount > 0.0) {
+                netGiver.add(new UserBalance(creditor.userId, creditor.amount - amount));
             }
-            if (debtor.amount + amount < -0.01) {
-                negative.add(new UserBalance(debtor.userId, debtor.amount + amount));
+            if (debtor.amount + amount < -0.0) {
+                netReceiver.add(new UserBalance(debtor.userId, debtor.amount + amount));
             }
         }
     }
