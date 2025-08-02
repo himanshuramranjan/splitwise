@@ -1,0 +1,52 @@
+Debt Simplification Algorithm – Explanation
+The goal of the simplification algorithm is to minimize the number of transactions required to settle debts within a group.
+It works on net balances rather than individual expense transactions.
+
+Steps in the Algorithm
+1. Calculate Net Balance of Each User
+From the BalanceSheet, we already have a mapping like:
+Map<userId, Map<otherUserId, amount>>
+
+For each user:
+
+Sum of all debts they owe to others (negative)
+
+Sum of all credits they should receive from others (positive)
+
+The result is a net balance map:
+
+Positive value → user should receive money (creditor)
+
+Negative value → user owes money (debtor)
+
+2. Separate Creditors and Debtors
+Put all creditors in one max-heap or sorted list (sorted by who has the most positive balance).
+
+Put all debtors in one min-heap or sorted list (sorted by who has the most negative balance).
+
+3. Greedy Settlement
+While both creditor and debtor lists are non-empty:
+
+Pick the largest creditor and largest debtor.
+
+Find the minimum amount to settle (min(creditor.amount, -debtor.amount)).
+
+Record a transaction:
+Debtor → Creditor : amount
+
+Update their net balances:
+
+creditor.amount -= amount
+
+debtor.amount += amount
+
+If either creditor or debtor becomes 0 (settled), remove them from the list.
+
+Repeat until all debts are cleared.
+
+4. Result
+The algorithm produces a set of minimal transactions that clears all debts.
+
+Time Complexity: O(n log n) (due to heaps or sorting)
+
+Space Complexity: O(n)
