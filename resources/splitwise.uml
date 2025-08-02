@@ -1,136 +1,73 @@
-+-----------------------------+        +-----------------------------+
-|           User              |        |            Split            |
-+-----------------------------+        +-----------------------------+
-| - userId: String            |<-------| - user: User                |
-| - name: String              |        | - amount: double            |
-| - email: String             |        | - id: String                |
-+-----------------------------+        +-----------------------------+
-| + getUserId(): String       |        | + getUser(): User           |
-| + getName(): String         |        | + getAmount(): double       |
-| + getEmail(): String        |        | + getId(): String           |
-+-----------------------------+        +-----------------------------+
++-------------------+         +-------------------+
+|   GroupService    |         |     Group         |
++-------------------+         +-------------------+
+| - groups: Map     |<>------>| - name: String    |
+|                   |         | - users: List<User>|
+| + createGroup()   |         | - balanceSheet:   |
+| + addUser()       |         |        BalanceSheet|
+| + addExpense()    |         | - expenseMap:     |
+| + updateExpense() |         |        Map<String,Expense>|
+| + deleteExpense() |         | + addUsers()      |
+| + showBalances()  |         | + addExpenseId()  |
+| + simplifyDebt()  |         | + getUsers()      |
++-------------------+         +-------------------+
 
-                ^ (uses)
-                |
-                |  * (composition)
-                v
-+-----------------------------+        +-----------------------------+
-|           Expense           |<>------|          Split              |
-+-----------------------------+        +-----------------------------+
-| - id: String                |        |                             |
-| - paidBy: User              |        +-----------------------------+
-| - amount: double            |
-| - involvedUsers: List<User> |
-| - splits: List<Split>       |
-| - splitStrategy:            |
-|   SplitStrategy             |
-+-----------------------------+
-| + getId()                   |
-| + getPaidBy()               |
-| + getAmount()/setAmount()   |
-| + getInvolvedUsers()        |
-| + setInvolvedUsers()        |
-| + getSplits()/setSplits()   |
-| + getSplitStrategy()        |
-+-----------------------------+
++-------------------+         +-------------------+
+|     Expense       |         |   BalanceSheet    |
++-------------------+         +-------------------+
+| - id: String      |         | - balances:       |
+| - paidBy: User    |         |   Map<String,Map<String,Double>>|
+| - involvedUsers:  |         | + updateBalance() |
+|        List<User> |         | + reverseBalance()|
+| - amount: double  |         | + getBalances()   |
+| - splits: List<Split>|      +-------------------+
+| + setSplits()     |
+| + setInvolvedUsers()|
+| + setAmount()     |
++-------------------+
 
-                ^ (Strategy pattern)
-                |
-                |  1
-                v
-+-----------------------------+
-|       <<interface>>         |
-|        SplitStrategy        |
-+-----------------------------+
-| + calculateSplits(...)      |
-+-----------------------------+
-   ^                ^                ^
-   |                |                |
-   |                |                |
-   |                |                |
-+----------------+  +----------------+  +---------------------------+
-| EqualSplit...  |  | ExactSplit...  |  | PercentageSplitStrategy   |
-+----------------+  +----------------+  +---------------------------+
++-------------------+         +-------------------+
+|       Split       |         |   SplitStrategy   |<<interface>>
++-------------------+         +-------------------+
+| - user: User      |<>------>| + calculateSplit( |
+| - amount: double  |         |      Expense,     |
+| + getUser()       |         |      Object )     |
+| + getAmount()     |         +-------------------+
++-------------------+                /\
+                                      |
+      +----------------------+---------------------+
+      |                                            |
++-------------------+                    +-------------------+
+| EqualSplitStrategy|                    | ExactSplitStrategy|
++-------------------+                    +-------------------+
+| + calculateSplit()|                    | + calculateSplit()|
++-------------------+                    +-------------------+
 
-+-----------------------------+
-|        BalanceSheet         |
-+-----------------------------+
-| - balances: Map<String,     |
-|   Map<String, Double>>      |
-+-----------------------------+
-| + updateBalance(...)        |
-| + reverseBalance(...)       |
-| + getBalances()             |
-+-----------------------------+
++-------------------+         +-------------------+
+|   DebtSimplifier  |         |   DisplayService  |
++-------------------+         +-------------------+
+| + simplify()      |         | + showBalances()  |
++-------------------+         +-------------------+
 
-+-----------------------------+
-|        ExpenseService       |
-+-----------------------------+
-| - balanceSheet: BalanceSheet|
-| - expenseMap: Map<String,   |
-|   Expense>                  |
-+-----------------------------+
-| + addExpense(...)           |
-| + updateExpense(...)        |
-| + deleteExpense(...)        |
-| + getBalances()             |
-+-----------------------------+
-           |
-           |  uses
-           v
-+-----------------------------+
-|        BalanceSheet         |
-+-----------------------------+
++-------------------+
+|       User        |
++-------------------+
+| - userId: String  |
+| - name: String    |
+| - email: String   |
+| + getUserId()     |
+| + getName()       |
+| + getEmail()      |
++-------------------+
 
-+-----------------------------+
-|          Group              |
-+-----------------------------+
-| - name: String              |
-| - users: List<User>         |
-| - expenseIds: List<String>  |
-+-----------------------------+
-| + addUser(User)             |
-| + addExpense(String)        |
-| + getUsers()                |
-| + getExpenseIds()           |
-+-----------------------------+
-
-+-----------------------------+
-|       GroupManager          |
-+-----------------------------+
-| - groups: Map<String,Group> |
-| - groupExpenseServices:     |
-|   Map<String, ExpenseService>|
-+-----------------------------+
-| + createGroup(...)          |
-| + addUserToGroup(...)       |
-| + addExpense(...)           |
-| + updateExpense(...)        |
-| + deleteExpense(...)        |
-| + showBalances(...)         |
-| + simplifyDebts(...)        |
-+-----------------------------+
-        |
-        | uses
-        v
-+-----------------------------+
-|       ExpenseService        |
-+-----------------------------+
-
-+-----------------------------+
-|       DisplayService        |
-+-----------------------------+
-| + showBalances(...)         |
-+-----------------------------+
-
-+-----------------------------+
-|       DebtSimplifier        |
-+-----------------------------+
-| + simplify(...)             |
-+-----------------------------+
-
-+-----------------------------+
-|            Main             |
-+-----------------------------+
-| + main(String[]): void      |
-+-----------------------------+
+Relationships:
+-------------
+GroupService "1" --> "many" Group
+Group "1" --> "1" BalanceSheet
+Group "1" --> "many" Expense
+Expense "1" --> "many" Split
+SplitStrategy <|.. EqualSplitStrategy
+SplitStrategy <|.. ExactSplitStrategy
+GroupService --> DebtSimplifier
+GroupService --> DisplayService
+DisplayService --> User
